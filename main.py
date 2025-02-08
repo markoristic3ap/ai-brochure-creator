@@ -1,12 +1,15 @@
+import markdown
 from website import Website
 from modelOpenAi import ModelOpenAI
 import json
+import unicodedata 
+from xhtml2pdf import pisa
 
 openAi = ModelOpenAI()
 openAi.initialize_model()
 
-SOURCE_TITLE = "3ap"
-SOURCE_URL = "https://3ap.ch"
+SOURCE_TITLE = "CreativeWin"
+SOURCE_URL = "https://creativewin.net"
 
 link_system_prompt = "You are provided with a list of links found on a webpage. \
 You are able to decide which of the links would be most relevant to include in a brochure about the company, \
@@ -59,13 +62,22 @@ def get_brochure_user_prompt(company_name, url):
     user_prompt += get_all_details(url)
     user_prompt = user_prompt[:5_000] # Truncate if more than 5,000 characters
     return user_prompt  
+
+def clean_text(text):
+    return unicodedata.normalize("NFKD", text).encode("ascii", "ignore").decode("ascii")
   
 def create_brochure(company_name, url):
     response = openAi.chat([
         {"role": "system", "content": system_prompt},
         {"role": "user", "content": get_brochure_user_prompt(company_name, url)}
     ])
-    print(response)
 
+    response = clean_text(response)
+    response = markdown.markdown(response)
+    
+    with open('brochure.pdf', 'wb') as output_file:
+     pisa.CreatePDF(response, output_file)
+    
+ 
 
 create_brochure(SOURCE_TITLE, SOURCE_URL)

@@ -2,3 +2,5 @@ requests
 python-dotenv
 beautifulsoup4
 openai
+markdown
+xhtml2pdf
