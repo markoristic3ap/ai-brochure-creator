@@ -21,9 +21,15 @@ class ModelOpenAI():
     self.openai = OpenAI(api_key=self.api_key)
     
 
-  def chat(self, prompt):
+  def chat(self, prompt, response_format="text"):
+    if response_format == "text":
+        responseFormat = { "type": "text" }
+    else:
+        responseFormat = { "type": "json_object" }
+        
     response = self.openai.chat.completions.create(
       model = self.model,
-      messages = prompt
+      messages = prompt,
+      response_format=responseFormat
     ) 
     return response.choices[0].message.content
