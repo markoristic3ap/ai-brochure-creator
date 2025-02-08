@@ -19,6 +19,7 @@ class ModelOpenAI():
 
   def initialize_model(self):
     self.openai = OpenAI(api_key=self.api_key)
+    
 
   def chat(self, prompt):
     response = self.openai.chat.completions.create(
